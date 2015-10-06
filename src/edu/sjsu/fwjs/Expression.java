@@ -72,6 +72,8 @@ class BinOpExpr implements Expression {
 
     @SuppressWarnings("incomplete-switch")
     public Value evaluate(Environment env) {
+        Expression x = e1.evaluate(env);
+        Expression y = e2.evaluate(env);
         // YOUR CODE HERE
         return null;
     }
@@ -108,12 +110,10 @@ class WhileExpr implements Expression {
         this.body = body;
     }
     public Value evaluate(Environment env) {
-        if(cond.evaluate(env).equals(true))
-        {
+        if(cond.evaluate(env).equals(true)) {
             body.evaluate(env);
             evaluate(env);// needs new environment and evalute itself
         }
-        else
         return null;
     }
 }
