@@ -93,7 +93,6 @@ class IfExpr implements Expression {
     public Value evaluate(Environment env) {
         if(cond.evaluate(env).equals(true)) return thn.evaluate(env);
 	else return els.evaluate(env);
-		
         //return null;
     }
 }
@@ -109,7 +108,12 @@ class WhileExpr implements Expression {
         this.body = body;
     }
     public Value evaluate(Environment env) {
-        // YOUR CODE HERE
+        if(cond.evaluate(env).equals(true))
+        {
+            body.evaluate(env);
+            evaluate(env);// needs new environment and evalute itself
+        }
+        else
         return null;
     }
 }
