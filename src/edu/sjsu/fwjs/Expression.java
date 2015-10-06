@@ -91,8 +91,10 @@ class IfExpr implements Expression {
         this.els = els;
     }
     public Value evaluate(Environment env) {
-        // YOUR CODE HERE
-        return null;
+        if(cond.evaluate(env).equals(true)) return thn.evaluate(env);
+	else return els.evaluate(env);
+		
+        //return null;
     }
 }
 
