@@ -113,8 +113,7 @@ class WhileExpr implements Expression {
             body.evaluate(env);
             evaluate(env);// needs new environment and evalute itself
         }
-        else
-        return null;
+            return null;
     }
 }
 
