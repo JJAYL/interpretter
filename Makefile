@@ -1,6 +1,6 @@
 # Update these variables to match the locations
-JUNIT_JAR=lib/junit-4.12.jar
-HAMCREST_JAR=lib/hamcrest-core-1.3.jar
+JUNIT_JAR=/Users/bryannguyen/GitHub/152_interpretter/testSrc/edu/sjsu/fwjs/junit-4.12.jar
+HAMCREST_JAR=/Users/bryannguyen/GitHub/152_interpretter/testSrc/edu/sjsu/fwjs/hamcrest-core-1.3.jar
 
 # These variables should not need to be changed
 TEST_CLASSPATH=${JUNIT_JAR}:${HAMCREST_JAR}
