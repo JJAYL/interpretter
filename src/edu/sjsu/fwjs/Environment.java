@@ -26,9 +26,20 @@ public class Environment {
      * If we are at the outermost scope (AKA the global scope)
      * null is returned (similar to how JS returns undefined.
      */
-    public Value resolveVar(String varName) {
+    public Value resolveVar(String varName) 
+    {
         // YOUR CODE HERE
-        return null;
+        if(map.containsValue(varName))
+        {
+            return varName;
+        }
+        else
+            if(outerEnv != null)
+            {
+                outerEnv.resolveVar(varName);
+            }
+            else
+                return null;
     }
 
     /**
@@ -36,9 +47,24 @@ public class Environment {
      * If a variable has not been defined previously in the current scope,
      * or any of the function's outer scopes, the var is stored in the global scope.
      */
-    public void updateVar(String key, Value v) {
-        // YOUR CODE HERE
+    public void updateVar(String key, Value v) 
+    {
+        if(map.containsKey(key)) //hash(key) is found
+        {
+            //update the hash with the new value
+            put(key,v);
+            //return;
+        }
+        else if(outerEnv== null) //it is the global scope
+        {
+            //insert hash with new value and key
+            put(key,v);
+            //return;
+        }
+        else
+        outerEnv.updateVar(key, v); //check the outer scope
     }
+
 
     /**
      * Creates a new variable in the local scope.
@@ -46,6 +72,6 @@ public class Environment {
      * a RuntimeException is thrown.
      */
     public void createVar(String key, Value v) {
-        // YOUR CODE HERE
+        map.put(key, v);
     }
 }
