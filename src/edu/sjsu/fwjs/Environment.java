@@ -3,6 +3,7 @@ package edu.sjsu.fwjs;
 import java.util.Map;
 import java.util.HashMap;
 
+
 public class Environment {
     private Map<String,Value> env = new HashMap<String,Value>();
     private Environment outerEnv;
@@ -28,18 +29,15 @@ public class Environment {
      */
     public Value resolveVar(String varName) 
     {
-        // YOUR CODE HERE
-        if(map.containsValue(varName))
+        if(env.containsValue(varName))
         {
-            return varName;
+           return env.get(varName);
         }
-        else
-            if(outerEnv != null)
-            {
-                outerEnv.resolveVar(varName);
-            }
-            else
-                return null;
+        else if (outerEnv != null)
+        {
+            outerEnv.resolveVar(varName);
+        }   
+        return null;
     }
 
     /**
@@ -49,16 +47,16 @@ public class Environment {
      */
     public void updateVar(String key, Value v) 
     {
-        if(map.containsKey(key)) //hash(key) is found
+        if(env.containsKey(key)) //hash(key) is found
         {
             //update the hash with the new value
-            put(key,v);
+            env.put(key,v);
             //return;
         }
         else if(outerEnv== null) //it is the global scope
         {
             //insert hash with new value and key
-            put(key,v);
+            env.put(key,v);
             //return;
         }
         else
@@ -72,6 +70,6 @@ public class Environment {
      * a RuntimeException is thrown.
      */
     public void createVar(String key, Value v) {
-        map.put(key, v);
+        env.put(key, v);
     }
 }
