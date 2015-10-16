@@ -3,7 +3,6 @@ package edu.sjsu.fwjs;
 import java.util.Map;
 import java.util.HashMap;
 
-
 public class Environment {
     private Map<String,Value> env = new HashMap<String,Value>();
     private Environment outerEnv;
@@ -12,7 +11,7 @@ public class Environment {
      * Constructor for global environment
      */
     public Environment() {}
-    //testBryan
+
     /**
      * Constructor for local environment of a function
      */
@@ -27,17 +26,23 @@ public class Environment {
      * If we are at the outermost scope (AKA the global scope)
      * null is returned (similar to how JS returns undefined.
      */
-    public Value resolveVar(String varName) 
-    {
-        if(env.containsValue(varName))
-        {
-           return env.get(varName);
+    public Value resolveVar(String varName) {
+        //
+        // YOUR CODE HERE.
+        //
+        // Update this method to look for the variable in the outer scope
+        // when it is not available in the current scope.
+        if (env.containsKey(varName)) {
+            return env.get(varName);
         }
-        else if (outerEnv != null)
-        {
-            outerEnv.resolveVar(varName);
-        }   
-        return null;
+        else {
+            if (outerEnv != null) {
+                return outerEnv.resolveVar(varName);
+            }
+            else {
+                return null;
+            }
+        }
     }
 
     /**
@@ -45,24 +50,25 @@ public class Environment {
      * If a variable has not been defined previously in the current scope,
      * or any of the function's outer scopes, the var is stored in the global scope.
      */
-    public void updateVar(String key, Value v) 
-    {
-        if(env.containsKey(key)) //hash(key) is found
-        {
-            //update the hash with the new value
+    public void updateVar(String key, Value v) {
+        //
+        // YOUR CODE HERE.
+        //
+        // Update this method to look for the variable in the outer scope
+        // when it is not available in the current scope.
+        // When the outer scope is null, create a new global variable.
+        if (env.containsKey(key)) {
             env.put(key,v);
-            //return;
         }
-        else if(outerEnv== null) //it is the global scope
-        {
-            //insert hash with new value and key
-            env.put(key,v);
-            //return;
-        }
-        else
-        outerEnv.updateVar(key, v); //check the outer scope
+        else {
+            if (outerEnv == null) {
+                createVar(key, v);
+            }
+            else {
+                outerEnv.updateVar(key, v);
+            }
+        } 
     }
-
 
     /**
      * Creates a new variable in the local scope.
@@ -70,6 +76,9 @@ public class Environment {
      * a RuntimeException is thrown.
      */
     public void createVar(String key, Value v) {
-        env.put(key, v);
+        if (env.containsKey(key)) {
+            throw new RuntimeException("Redeclaring existing var " + key);
+        }
+        env.put(key,v);
     }
 }
