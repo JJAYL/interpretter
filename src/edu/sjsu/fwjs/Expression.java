@@ -3,6 +3,8 @@ package edu.sjsu.fwjs;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 /**
  * FWJS expressions.
  */
@@ -30,21 +32,6 @@ class ValueExpr implements Expression {
 }
 
 /**
- * A print expression.
- */
-class PrintExpr implements Expression {
-    private Expression exp;
-    public PrintExpr(Expression exp) {
-        this.exp = exp;
-    }
-    public Value evaluate(Environment env) {
-        Value v = exp.evaluate(env);
-        System.out.println(v.toString());
-        return v;
-    }
-}
-
-/**
  * Expressions that are a FWJS variable.
  */
 class VarExpr implements Expression {
@@ -58,6 +45,20 @@ class VarExpr implements Expression {
 }
 
 /**
+ * A print expression.
+ */
+class PrintExpr implements Expression {
+    private Expression exp;
+    public PrintExpr(Expression exp) {
+        this.exp = exp;
+    }
+    public Value evaluate(Environment env) {
+        Value v = exp.evaluate(env);
+        System.out.println(v.toString());
+        return v;
+    }
+}
+/**
  * Binary operators (+, -, *, etc).
  * Currently only numbers are supported.
  */
@@ -70,37 +71,38 @@ class BinOpExpr implements Expression {
         this.e1 = e1;
         this.e2 = e2;
     }
-    public Value evaluate(Environment env) {
-        Value v1 = e1.evaluate(env);
-        Value v2 = e2.evaluate(env);
-        if (!(v1 instanceof IntVal && v2 instanceof IntVal))
-            throw new RuntimeException("Expected ints, but got " + v1 + " and " + v2);
-        int i = ((IntVal) v1).toInt();
-        int j = ((IntVal) v2).toInt();
-        switch(op) {
-        case ADD:
-            return new IntVal(i + j);
-        case SUBTRACT:
-            return new IntVal(i - j);
-        case MULTIPLY:
-            return new IntVal(i * j);
-        case DIVIDE:
-            return new IntVal(i / j);
-        case MOD:
-            return new IntVal(i % j);
-        case GT:
-            return new BoolVal(i > j);
-        case GE:
-            return new BoolVal(i >= j);
-        case LT:
-            return new BoolVal(i < j);
-        case LE:
-            return new BoolVal(i <= j);
-        case EQ:
-            return new BoolVal(i == j);
-        }
 
-        throw new RuntimeException("Unrecognized operator: " + op);
+    @SuppressWarnings("incomplete-switch")
+    public Value evaluate(Environment env) 
+    {
+        Value x = e1.evaluate(env);
+        Value y = e2.evaluate(env);
+        int num1;
+        int num2;
+        num1 = ((IntVal) x).toInt();
+        num2 = ((IntVal) y).toInt();
+        switch(op)
+        {
+        case ADD:
+        	return new IntVal(num1 + num2);
+        case SUBTRACT:
+        	return new IntVal(num1 - num2);
+        case MULTIPLY:
+        	return new IntVal(num1 * num2);
+        case DIVIDE:
+        	return new IntVal(num1 / num2);
+        case MOD:
+        	return new IntVal(num1 % num2);
+        case GT:
+        	return new BoolVal(num1 > num2);
+        case GE:
+        	return new BoolVal(num1 >= num2);
+        case LT:
+        	return new BoolVal(num1 <= num2);
+        case EQ:
+        	return new BoolVal(num1 == num2);
+        }
+        return null;
     }
 }
 
@@ -117,18 +119,13 @@ class IfExpr implements Expression {
         this.thn = thn;
         this.els = els;
     }
-    public Value evaluate(Environment env) {
-        Value v = this.cond.evaluate(env);
-        if (!(v instanceof BoolVal))
-            throw new RuntimeException("Expected boolean, but got " + v);
-        BoolVal bv = (BoolVal) v;
-        if (bv.toBoolean()) {
-            return this.thn.evaluate(env);
-        } else if (this.els != null){
-            return this.els.evaluate(env);
-        } else {
-            return null;
-        }
+    public Value evaluate(Environment env) 
+    {
+    	BoolVal b1 = (BoolVal) this.cond.evaluate(env);
+        if(b1.toBoolean()) 
+        	return this.thn.evaluate(env);
+	    else return this.els.evaluate(env);
+        //return null;
     }
 }
 
@@ -142,17 +139,15 @@ class WhileExpr implements Expression {
         this.cond = cond;
         this.body = body;
     }
-    public Value evaluate(Environment env) {
-        Value v = this.cond.evaluate(env);
-        if (!(v instanceof BoolVal))
-            throw new RuntimeException("Expected boolean, but got " + v);
-        boolean b = ((BoolVal) v).toBoolean();
-        if (b) {
-            this.body.evaluate(env);
-            return this.evaluate(env);
-        } else {
-            return null;
+    public Value evaluate(Environment env) 
+    {
+    	BoolVal b1 = (BoolVal) cond.evaluate(env);
+        if(b1.toBoolean())
+        {
+        	body.evaluate(env);
+        	return this.evaluate(env); // needs new environment and evalute itself
         }
+        return null;
     }
 }
 
@@ -166,9 +161,11 @@ class SeqExpr implements Expression {
         this.e1 = e1;
         this.e2 = e2;
     }
-    public Value evaluate(Environment env) {
-        e1.evaluate(env);
-        return e2.evaluate(env);
+    public Value evaluate(Environment env) 
+    {
+    	e1.evaluate(env);
+    	return e2.evaluate(env);
+        // YOUR CODE HERE
     }
 }
 
@@ -182,10 +179,12 @@ class VarDeclExpr implements Expression {
         this.varName = varName;
         this.exp = exp;
     }
-    public Value evaluate(Environment env) {
-        Value v = exp.evaluate(env);
-        env.createVar(varName, v);
-        return v;
+    public Value evaluate(Environment env) 
+    {
+    	Value v1 = this.exp.evaluate(env);
+    	env.createVar(varName, v1);
+        // YOUR CODE HERE
+        return v1;
     }
 }
 
@@ -202,9 +201,10 @@ class AssignExpr implements Expression {
         this.e = e;
     }
     public Value evaluate(Environment env) {
-        Value v = e.evaluate(env);
-        env.updateVar(varName, v);
-        return v;
+    	Value v1 = e.evaluate(env);
+    	env.updateVar(varName, v1);
+        // YOUR CODE HERE
+        return v1;
     }
 }
 
@@ -215,18 +215,14 @@ class FunctionDeclExpr implements Expression {
     private List<String> params;
     private Expression body;
     public FunctionDeclExpr(List<String> params, Expression body) {
-        //
-        // YOUR CODE HERE
-        //
         this.params = params;
         this.body = body;
     }
-    public Value evaluate(Environment env) {
-        //
-        // YOUR CODE HERE
-        //
-        ClosureVal c = new ClosureVal(params, body, env);
-        return c;
+    public Value evaluate(Environment env) 
+    {
+    	ClosureVal c1 = new ClosureVal(params, body, env);
+    	return c1;
+        
     }
 }
 
@@ -237,22 +233,20 @@ class FunctionAppExpr implements Expression {
     private Expression f;
     private List<Expression> args;
     public FunctionAppExpr(Expression f, List<Expression> args) {
-        //
-        // YOUR CODE HERE
-        //
         this.f = f;
         this.args = args;
     }
-    public Value evaluate(Environment env) {
-        //
+    public Value evaluate(Environment env) 
+    {
+    	ClosureVal c1 = (ClosureVal)(f.evaluate(env));
+    	List<Value> v1 = new ArrayList<Value>();
+    	for(int i = 0; i < args.size(); i++)
+    	{
+    		v1.add(args.get(i).evaluate(env));
+    	}
+    	
         // YOUR CODE HERE
-        //
-        ClosureVal c = (ClosureVal) (f.evaluate(env));
-        List<Value> values = new ArrayList<Value>();
-        for (int i = 0; i < args.size(); i++) {
-           values.add(args.get(i).evaluate(env));
-        }
-        return c.apply(values, env);
+        return c1.apply(v1);
     }
 }
 
